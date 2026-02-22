@@ -16,7 +16,3 @@ See [`AUTOMATION.md`](./AUTOMATION.md) for details:
 - update cadence
 - auth requirements
 - troubleshooting
-
-## Security note
-This public repo should not contain machine-specific sensitive details
-(e.g., absolute local storage paths, personal tokens, private hostnames).
