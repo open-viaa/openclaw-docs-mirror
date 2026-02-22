@@ -12,8 +12,8 @@ This mirror keeps our reference docs fresh and reduces conflicting guidance.
 - Sends status updates to Telegram
 
 ## Automation details
-- Local path: `/Users/bot/github/openclaw-docs-sync`
-- Script: `sync-docs.sh`
+- Local sync directory: `<LOCAL_SYNC_DIR>`
+- Script: `<SYNC_SCRIPT_PATH>`
 - Scheduler: OpenClaw cron job `github-docs-sync` (every 2d)
 
 ## One-time setup required
@@ -23,5 +23,9 @@ Without auth, sync runs but push fails.
 ## Troubleshooting
 If sync fails with:
 `fatal: could not read Username for 'https://github.com': Device not configured`
-then configure GitHub credentials on the host and test:
-`/Users/bot/github/openclaw-docs-sync/sync-docs.sh`
+then configure GitHub credentials on the host and run your sync script manually once to verify.
+
+## Notes
+- Do not commit personal absolute file paths.
+- Keep machine-specific values in local config only (not in public docs).
+- See `README.md` for quick usage summary.
