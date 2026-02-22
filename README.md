@@ -16,3 +16,9 @@ See [`AUTOMATION.md`](./AUTOMATION.md) for details:
 - update cadence
 - auth requirements
 - troubleshooting
+
+See [`QUICK_HELP.md`](./QUICK_HELP.md) for:
+- GitHub CLI auth bottleneck fix
+- common login failure patterns
+- public-repo safety rules
+
