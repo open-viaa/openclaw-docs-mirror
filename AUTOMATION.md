@@ -1,45 +1,75 @@
 # Docs Mirror Automation
 
-## Why we did this
-We want a docs-first workflow based on official OpenClaw source, not random web advice.
-This mirror keeps our reference docs fresh and reduces conflicting guidance.
+This file explains exactly how this mirror is kept current.
 
-## What this does
-- Pulls latest docs from `openclaw/openclaw`
-- Pushes updates to this mirror repo
-- Runs automatically every 2 days via **OpenClaw cron**
-- Sends status updates after runs
+## Scope
 
-## Scheduler (current)
-- **System:** OpenClaw `cron` (not heartbeat)
-- **Job name:** `github-docs-sync`
-- **Cadence:** every `2d`
-- **Mode:** isolated scheduled run
+- Sync **official OpenClaw docs** into `official-docs/`
+- Keep **custom operational notes** in `additions/`
+- Commit and push changes to this repository
 
-## GitHub auth bottleneck (common)
-Use this exact sequence:
+## Canonical layout
 
-1. Run `gh auth login`
-2. Choose: `GitHub.com` → `HTTPS` → `Yes` → `Login with a web browser`
-3. Copy the one-time code shown in terminal
-4. Press `Enter` in terminal (opens device page)
-5. Complete approval in browser
-6. Return to terminal and wait for `✓ Logged in as ...`
-7. Verify with `gh auth status`
+- `official-docs/` → mirrored from official OpenClaw docs
+- `additions/` → VIAA-maintained content (troubleshooting + memory workflow)
 
-If browser says success but terminal is still waiting, login is not complete yet.
-Go back to the same terminal session and finish it (do not `Ctrl+C` early).
+## Manual sync (local machine)
 
-## One-time setup required
-GitHub push auth must be configured on the host machine.
-Use `gh auth login` and verify with `gh auth status`.
+```bash
+cd ~/.openclaw/workspace/openclaw-docs-mirror
 
-## Quick verify
-- `gh auth status`
-- Manual run: `/Users/bot/github/openclaw-docs-sync/sync-docs.sh`
-- Check scheduled jobs: `openclaw cron list`
+# Mirror official docs from local OpenClaw install
+rsync -a --delete /opt/homebrew/lib/node_modules/openclaw/docs/ ./official-docs/
 
-## Public docs rules
-- Keep docs concise and operational.
-- Do not commit machine-specific sensitive details.
-- Use placeholders for local paths/secrets in public docs.
+# (Optional) refresh troubleshooting notes from workspace source
+rsync -a ~/.openclaw/workspace/troubleshooting/ ./additions/troubleshooting/
+
+# Commit and push
+git add official-docs additions README.md AUTOMATION.md
+git commit -m "sync official docs + refresh additions"
+git push origin main
+```
+
+## Scheduler pattern (OpenClaw cron)
+
+Recommended job names:
+- `docs-mirror:sync`
+- `docs-mirror:status`
+
+Recommended cadence:
+- Sync every 1-2 days
+- Status/verification daily
+
+Before creating/editing jobs:
+
+```bash
+openclaw cron list
+```
+
+Then create or update using `openclaw cron add` / `openclaw cron edit`.
+
+## Auth requirements
+
+GitHub auth must be valid on host:
+
+```bash
+gh auth status
+```
+
+If not logged in:
+
+```bash
+gh auth login
+```
+
+## Troubleshooting
+
+- Push denied: re-run `gh auth login` and verify scopes.
+- No official docs found at source path: verify OpenClaw is installed and path exists.
+- Too many noisy diffs: ensure `rsync --delete` is used for deterministic mirror state.
+
+## Public repo hygiene
+
+- Never commit secrets/tokens/private paths
+- Keep additions concise and operational
+- If custom advice conflicts with official docs, mark it clearly and favor official docs
